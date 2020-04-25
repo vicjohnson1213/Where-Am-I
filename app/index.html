@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Where Am I?</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="results-overview hide">
+        <div id="results-map"></div>
+        <table id="results-table">
+            <tr>
+                <th>Round</th>
+                <th>Accuracy</th>
+                <th>Score</th>
+            </tr>
+        </table>
+        <button id="next-round-button">Next round</button>
+    </div>
+    <div class="street-view-area">
+        <div id="street-view-map"></div>
+    </div>
+    <div class="guess-area">
+        <div class="resize-handle"></div>
+        <div class="guess-map-organizer">
+            <div id="guess-map"></div>
+            <button id="make-guess-button">Make guess</button>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <script src="bundle.js"></script>
+</body>
+
+</html>

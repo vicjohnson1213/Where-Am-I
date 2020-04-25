@@ -1,0 +1,31 @@
+{
+  "name": "where-am-i",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "dependencies": {
+    "browserify": "^16.5.1",
+    "random-streetview": "^1.0.10",
+    "watchify": "^3.11.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.5",
+    "@babel/preset-es2015": "^7.0.0-beta.53",
+    "babelify": "^10.0.0",
+    "esmify": "^2.1.1",
+    "gulp": "^4.0.2",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2",
+    "vinyl-buffer": "^1.0.1",
+    "vinyl-source-stream": "^2.0.0"
+  },
+  "scripts": {
+    "gulp": "gulp",
+    "build": "gulp",
+    "watch": "gulp watch"
+  },
+  "author": "",
+  "license": "ISC"
+}
