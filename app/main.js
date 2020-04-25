@@ -100,7 +100,7 @@ function makeGuess() {
 
     const dist = haversine_distance(currentRound.guessMarker, currentRound.actualMarker);
     currentRound.accuracy = dist;
-    currentRound.score = Math.max((20000 / dist) - 10, 0);
+    currentRound.score = dist < 3000 ? (((1/30) * dist - 100) ** 2) : 0;
     setScoreLabels();
 
     $('.results-overview').toggleClass('hide');
