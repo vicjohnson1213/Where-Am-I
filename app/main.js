@@ -17,7 +17,19 @@ function startRound() {
     game.round++;
     game.rounds.push({});
     generateRandomStreetView()
-        .then(pos => game.rounds[game.round].actualPos = pos);
+        .then(() => $('.results-overview').addClass('hide'));
+}
+
+function roundToTwo(num) {
+    return Math.round((num + Number.EPSILON) * 100) / 100;
+}
+
+function getDistanceLabel(dist) {
+    if (dist > 1) {
+        return `${roundToTwo(dist)} km`;
+    }
+
+    return `${roundToTwo(dist * 1000)} m`;
 }
 
 function setScoreLabels() {
@@ -25,16 +37,19 @@ function setScoreLabels() {
     table.empty();
 
     const head = $('<tr>');
-    const round = $('<td>');
+    table.append(head);
+
+    const round = $('<th>');
     round.text('Round');
     head.append(round);
-    const accuracy = $('<td>');
+
+    const accuracy = $('<th>');
     accuracy.text('Accuracy');
     head.append(accuracy);
-    const score = $('<td>');
+
+    const score = $('<th>');
     score.text('Score');
     head.append(score);
-    table.append(head);
     
     for (let i = 0; i < game.maxRounds; i++) {
         const row = $('<tr>');
@@ -44,8 +59,8 @@ function setScoreLabels() {
 
         roundCell.text(i + 1);
         if (game.rounds[i]) {
-            accuracyCell.text((Math.round((game.rounds[i].accuracy + Number.EPSILON) * 100) / 100) + 'km');
-            scoreCell.text((Math.round(game.rounds[i].score)));
+            accuracyCell.text(getDistanceLabel(game.rounds[i].accuracy));
+            scoreCell.text(game.rounds[i].score);
         } else {
             accuracyCell.text('-');
             scoreCell.text('-');
@@ -56,6 +71,21 @@ function setScoreLabels() {
         row.append(scoreCell);
         table.append(row);
     }
+
+    const totalRow = $('<tr>');
+    table.append(totalRow);
+    totalRow.append($('<td>'));
+
+    const totalAccuracy = game.rounds.reduce((total, next) => total + next.accuracy, 0);
+    const avgAccuracy = roundToTwo(totalAccuracy / game.rounds.length)
+    const totalAccuracyCell = $('<td>');
+    totalAccuracyCell.text(`${avgAccuracy} km avg`);
+    totalRow.append(totalAccuracyCell);
+
+    const totalScore = game.rounds.reduce((total, next) => total + next.score, 0);
+    const totalScoreCell = $('<td>');
+    totalScoreCell.text(`${totalScore} total`);
+    totalRow.append(totalScoreCell);
 }
 
 function setGuessMarker(location) {
@@ -77,6 +107,11 @@ function setGuessMarker(location) {
 
 function makeGuess() {
     const currentRound = game.rounds[game.round];
+
+    if (!currentRound.guessMarker) {
+        return;
+    }
+
     const actualMarker = new google.maps.Marker({
         map: game.resultsMap,
         animation: google.maps.Animation.DROP,
@@ -100,10 +135,10 @@ function makeGuess() {
 
     const dist = haversine_distance(currentRound.guessMarker, currentRound.actualMarker);
     currentRound.accuracy = dist;
-    currentRound.score = dist < 3000 ? (((1/30) * dist - 100) ** 2) : 0;
+    currentRound.score = Math.round(dist < 3000 ? (((1/30) * dist - 100) ** 2) : 0);
     setScoreLabels();
 
-    $('.results-overview').toggleClass('hide');
+    $('.results-overview').removeClass('hide');
     const bounds = new google.maps.LatLngBounds();
     bounds.extend(currentRound.guessMarker.getPosition());
     bounds.extend(actualMarker.getPosition());
@@ -123,10 +158,11 @@ function generateRandomStreetView() {
             addressControl: false,
             fullscreenControl: false,
             enableCloseButton: false,
-            panControl: true,
+            panControl: false,
             showRoadLabels: false,
             motionTracking: false,
-            motionTrackingControl: false
+            motionTrackingControl: false,
+            zoomControl: false
         });
         game.streetViewMap.setStreetView(panorama);
         return pos;
@@ -143,7 +179,6 @@ function initGame() {
 
     $('#make-guess-button').click((event) => makeGuess(event));
     $('#next-round-button').click(() => {
-        $('.results-overview').toggleClass('hide');
         startRound();
     });
 }
@@ -184,7 +219,8 @@ function initMap() {
 
     game.streetViewMap = new google.maps.Map(document.getElementById('street-view-map'), {
         center: initCenter,
-        zoom: 14
+        zoom: 14,
+        zoomControl:false
     });
 
     game.guessMap = new google.maps.Map(document.getElementById('guess-map'), {
@@ -196,6 +232,7 @@ function initMap() {
         mapTypeControl: false,
         fullscreenControl: false,
         streetViewControl: false,
+        zoomControl: false
     });
 
     game.guessMap.addListener('click', (e) => setGuessMarker(e.latLng));
@@ -206,6 +243,7 @@ function initMap() {
         mapTypeControl: false,
         fullscreenControl: false,
         streetViewControl: false,
+        zoomControl: false
     });
 }
 
